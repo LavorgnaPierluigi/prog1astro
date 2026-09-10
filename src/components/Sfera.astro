@@ -1,0 +1,22 @@
+---
+interface Props {
+  mode: 'intro' | 'home';
+}
+
+const { mode } = Astro.props;
+---
+
+<div class="sfera-stage" id="sfera-stage" data-mode={mode}></div>
+
+<script>
+  import { mountSfera } from '../lib/sfera.js';
+  import { avviaGioco } from '../lib/gioco-ui.js';
+
+  const stage = document.getElementById('sfera-stage');
+  const mode = stage?.dataset.mode === 'home' ? 'home' : 'intro';
+  if (stage) {
+    const sfera = mountSfera(stage, { mode });
+    const root = document.getElementById('gioco');
+    if (mode === 'intro' && root) avviaGioco(sfera, root);
+  }
+</script>
