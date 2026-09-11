@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { percorso } from '../lib/percorso.js';
 ---
 
 <Layout title="Non trovata">
   <main>
     <p>Questa pagina non c’è.</p>
-    <a href="/">Torna all’ingresso</a>
+    <a href={percorso()}>Torna all’ingresso</a>
   </main>
 </Layout>
 

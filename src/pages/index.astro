@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { percorso } from '../lib/percorso.js';
 import '../styles/presentazione.css';
 ---
 
@@ -13,7 +14,7 @@ import '../styles/presentazione.css';
           <p class="etichetta resto-apertura">un gioco di parole</p>
           <h1 class="titolo-apertura">BLUBLINO</h1>
           <p class="lead resto-apertura">Lento. Dolce. Senza fretta.</p>
-          <a class="prova resto-apertura" href="/gioco">Gioca</a>
+          <a class="prova resto-apertura" href={percorso('gioco')}>Gioca</a>
         </section>
 
         <section class="schermata" aria-hidden="true">
@@ -48,7 +49,7 @@ import '../styles/presentazione.css';
 
         <section class="schermata ultima" aria-hidden="true">
           <p class="etichetta">quando sei pronto</p>
-          <a class="prova" href="/gioco">Gioca</a>
+          <a class="prova" href={percorso('gioco')}>Gioca</a>
         </section>
       </div>
     </div>

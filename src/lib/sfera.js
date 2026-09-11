@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { BLOB_FEELING, rotazioneBlob } from './blob-sfondo.js';
 import { faseBollicina, uSalita } from './bollicina.js';
 import { etichetteVisibili, posBlobLingua, uSeparazione } from './lingue.js';
 import { LINGUE } from './livelli.js';
 import { createProductModel } from './modelli-prodotti.js';
+import { BLOB_FEELING, rotazioneBlob } from './blob-sfondo.js';
+import { percorso } from './percorso.js';
 
 const FEELING = BLOB_FEELING;
 
@@ -939,7 +940,7 @@ export function mountSfera(stage, { mode }) {
       if (!hitsSphere() || !introClickEnabled) return;
       fermaBollicina();
       if (introClick) introClick();
-      else window.location.href = '/home';
+      else window.location.href = percorso('gioco');
       return;
     }
     if (following) {
