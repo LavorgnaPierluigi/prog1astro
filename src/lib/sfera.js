@@ -1,11 +1,11 @@
 import * as THREE from 'three';
+import { BLOB_FEELING, rotazioneBlob } from './blob-sfondo.js';
+import { faseBollicina, uSalita } from './bollicina.js';
+import { etichetteVisibili, posBlobLingua, uSeparazione } from './lingue.js';
+import { LINGUE } from './livelli.js';
 import { createProductModel } from './modelli-prodotti.js';
 
-const FEELING = {
-  deform: 0.18,
-  speed: 0.22,
-  stretch: 0.16,
-};
+const FEELING = BLOB_FEELING;
 
 const LOAD_BLACK_MS = {
   intro: 2000,
@@ -41,7 +41,7 @@ export function mountSfera(stage, { mode }) {
   renderer.setSize(innerWidth, innerHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.82;
+  renderer.toneMappingExposure = 1.08;
   const canvas = renderer.domElement;
   canvas.style.touchAction = 'none';
   stage.appendChild(canvas);
@@ -55,18 +55,18 @@ export function mountSfera(stage, { mode }) {
   envCanvas.height = 256;
   const ctx = envCanvas.getContext('2d');
   if (!ctx) throw new Error('Sfera: canvas 2d');
-  ctx.fillStyle = '#050506';
+  ctx.fillStyle = '#0a080c';
   ctx.fillRect(0, 0, 512, 256);
   const sky = ctx.createLinearGradient(0, 0, 0, 120);
-  sky.addColorStop(0, '#2a2a30');
-  sky.addColorStop(1, '#050506');
+  sky.addColorStop(0, '#4a3848');
+  sky.addColorStop(1, '#0a080c');
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 512, 90);
-  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.fillStyle = 'rgba(255,236,228,0.7)';
   ctx.beginPath();
   ctx.ellipse(360, 58, 36, 14, -0.35, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = 'rgba(210,215,225,0.45)';
+  ctx.fillStyle = 'rgba(232,200,214,0.42)';
   ctx.beginPath();
   ctx.ellipse(140, 200, 70, 16, 0.2, 0, Math.PI * 2);
   ctx.fill();
@@ -77,15 +77,15 @@ export function mountSfera(stage, { mode }) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envMap = pmrem.fromScene(envScene, 0, 0.1, 20).texture;
   scene.environment = envMap;
-  scene.environmentIntensity = 0.7;
+  scene.environmentIntensity = 0.62;
 
-  const key = new THREE.DirectionalLight(0xf7f4f8, 1.05);
+  const key = new THREE.DirectionalLight(0xfff4ea, 1.05);
   key.position.set(3.5, 4.2, 6);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0xc5d0dc, 0.4);
+  const rim = new THREE.DirectionalLight(0xf0c8d8, 0.5);
   rim.position.set(-6, 1, -2);
   scene.add(rim);
-  const fill = new THREE.PointLight(0xffffff, 0.35, 24, 1.6);
+  const fill = new THREE.PointLight(0xffe4f0, 0.48, 24, 1.6);
   fill.position.set(-2, 4, 5);
   scene.add(fill);
 
@@ -99,20 +99,20 @@ export function mountSfera(stage, { mode }) {
     uTint: { value: 0 },
   };
 
-  const GLOW_RED = new THREE.Color(0xff1a0a);
-  const GLOW_VIOLET = new THREE.Color(0xb14dff);
+  const GLOW_RED = new THREE.Color(0xffb4a8);
+  const GLOW_VIOLET = new THREE.Color(0xddc4f0);
 
   const material = new THREE.MeshPhysicalMaterial({
-    color: 0x16161a,
-    metalness: 1,
-    roughness: 0.28,
-    envMapIntensity: 0.75,
-    clearcoat: 0.22,
-    clearcoatRoughness: 0.4,
-    specularIntensity: 0.5,
-    specularColor: new THREE.Color(0xdddddd),
-    sheen: 0.08,
-    sheenColor: new THREE.Color(0x8a8a92),
+    color: 0x3d3348,
+    metalness: 0.58,
+    roughness: 0.48,
+    envMapIntensity: 0.62,
+    clearcoat: 0.42,
+    clearcoatRoughness: 0.55,
+    specularIntensity: 0.35,
+    specularColor: new THREE.Color(0xfff0e4),
+    sheen: 0.45,
+    sheenColor: new THREE.Color(0xf0c8d4),
     sheenRoughness: 0.55,
     emissive: GLOW_RED.clone(),
     emissiveIntensity: 0,
@@ -121,7 +121,7 @@ export function mountSfera(stage, { mode }) {
     transmission: mode === 'home' ? 0 : 0,
     thickness: 0.45,
     ior: 1.5,
-    attenuationColor: new THREE.Color(0x1a181f),
+    attenuationColor: new THREE.Color(0x3a2838),
     attenuationDistance: 1.8,
   });
 
@@ -169,8 +169,8 @@ export function mountSfera(stage, { mode }) {
       '#include <dithering_fragment>',
       `
       float rim = pow(1.0 - saturate(dot(normalize(vNormal), normalize(vViewPosition))), 2.25);
-      vec3 glowCol = mix(vec3(1.0, 0.08, 0.04), vec3(0.72, 0.22, 1.0), uTint);
-      vec3 rimCol = mix(vec3(0.55, 0.56, 0.6), glowCol, uGlow);
+      vec3 glowCol = mix(vec3(1.0, 0.62, 0.55), vec3(0.78, 0.66, 0.94), uTint);
+      vec3 rimCol = mix(vec3(0.68, 0.64, 0.7), glowCol, uGlow);
       gl_FragColor.rgb += rimCol * rim * (uRim + uGlow * 2.4);
       gl_FragColor.rgb += glowCol * uGlow * 0.16;
       #include <dithering_fragment>
@@ -185,25 +185,71 @@ export function mountSfera(stage, { mode }) {
 
   const innerRoot = new THREE.Group();
   scene.add(innerRoot);
-  const innerLight = new THREE.PointLight(0xfff1dc, 1.35, 4, 1.8);
+  const innerLight = new THREE.PointLight(0xffe8f2, 1.2, 4, 1.8);
   innerRoot.add(innerLight);
   const innerItems = new Map();
   let glassT = 0;
   let fadeOpacity = 0;
-  const COLOR_METAL = new THREE.Color(0x16161a);
-  const COLOR_GLASS = new THREE.Color(0x6a6a74);
-  const COLOR_GREEN = new THREE.Color(0x1f9d55);
-  const COLOR_MOOD_RED = new THREE.Color(0xc42318);
+  const COLOR_METAL = new THREE.Color(0x3d3348);
+  const COLOR_GLASS = new THREE.Color(0xb8a8c4);
+  const COLOR_GREEN = new THREE.Color(0xa8e8cc);
+  const COLOR_MOOD_RED = new THREE.Color(0xf0b09e);
+  const coloreBase = COLOR_METAL.clone();
+  let coloreLivello = false;
 
   let umoreTarget = 0;
   let umoreSmooth = 0;
   let scalaExtra = 1;
   let scalaExtraTarget = 1;
   let fadeGame = 1;
+  let fadeInT0 = 0;
+  const FADE_IN_PARTITA_MS = 3200;
   let finale = null;
+  /** @type {{ mesh: THREE.Mesh, vel: THREE.Vector3, spin: THREE.Vector3, life: number }[]} */
+  const scoppioPezzi = [];
   let introClickEnabled = true;
   /** @type {null | (() => void)} */
   let introClick = null;
+  /** @type {null | (() => void)} */
+  let onNomePronto = null;
+  let bollicinaT0 = -1;
+  let bollicinaNomeDetto = false;
+  const scoppioPunto = new THREE.Vector3();
+  const bollicinaGeo = new THREE.SphereGeometry(1, 32, 24);
+  const bollicinaMat = new THREE.MeshPhysicalMaterial({
+    color: 0x5a4860,
+    metalness: 0.42,
+    roughness: 0.38,
+    envMapIntensity: 0.7,
+    clearcoat: 0.55,
+    clearcoatRoughness: 0.4,
+    transparent: true,
+    opacity: 0,
+    transmission: 0.22,
+    thickness: 0.35,
+    ior: 1.4,
+  });
+  const bollicina = new THREE.Mesh(bollicinaGeo, bollicinaMat);
+  bollicina.visible = false;
+  scene.add(bollicina);
+  const gocce = [];
+
+  const lingueGeo = new THREE.SphereGeometry(1, 64, 48);
+  const lingueUniforms = {
+    uTime: uniforms.uTime,
+    uDeform: { value: 0.16 },
+    uStretch: { value: 0.14 },
+    uSpeed: { value: 0.2 },
+  };
+  /** @type {{ mesh: THREE.Mesh, lato: -1 | 1 }[]} */
+  const lingueBlobs = [];
+  let lingueT0 = -1;
+  let linguePronte = false;
+  let lingueFermeDetto = false;
+  /** @type {null | ((id: string) => void)} */
+  let onLinguaScelta = null;
+  /** @type {null | ((punti: { id: string, x: number, y: number }[]) => void)} */
+  let onLingueFerme = null;
 
   let following = false;
   let displaced = false;
@@ -275,7 +321,7 @@ export function mountSfera(stage, { mode }) {
 
   function applyScale() {
     umoreSmooth += (umoreTarget - umoreSmooth) * 0.1;
-    scalaExtra += (scalaExtraTarget - scalaExtra) * 0.1;
+    scalaExtra += (scalaExtraTarget - scalaExtra) * (finale === 'explode' ? 0.22 : 0.1);
     const fullPx = DIAMETER_CM * PX_PER_CM;
     const tShop = shopShrinkT() * (1 - glassT * 0.7);
     const mood = umoreSmooth / 10;
@@ -291,10 +337,11 @@ export function mountSfera(stage, { mode }) {
     uniforms.uStretch.value = FEELING.stretch * (1 - tShop * 0.65);
     uniforms.uRim.value = 0.55 + glow * 1.8 + Math.abs(mood) * 0.35;
     uniforms.uGlow.value = glow;
-    if (mood > 0.001) material.color.lerpColors(COLOR_METAL, COLOR_GREEN, mood);
-    else if (mood < -0.001) material.color.lerpColors(COLOR_METAL, COLOR_MOOD_RED, -mood);
-    else if (mode !== 'home') material.color.copy(COLOR_METAL);
+    if (mood > 0.001) material.color.lerpColors(coloreBase, COLOR_GREEN, mood);
+    else if (mood < -0.001) material.color.lerpColors(coloreBase, COLOR_MOOD_RED, -mood);
+    else if (mode !== 'home') material.color.copy(coloreBase);
     const moodGlow = Math.abs(mood) * 0.45;
+    const baseGlow = coloreLivello ? 0.32 : 0;
     if (glow > 0.05) {
       material.emissive.copy(uniforms.uTint.value > 0.5 ? GLOW_VIOLET : GLOW_RED);
       material.emissiveIntensity = glow * 0.7;
@@ -305,7 +352,8 @@ export function mountSfera(stage, { mode }) {
       material.emissive.copy(COLOR_MOOD_RED);
       material.emissiveIntensity = moodGlow;
     } else {
-      material.emissiveIntensity = 0;
+      material.emissive.copy(coloreBase);
+      material.emissiveIntensity = baseGlow;
     }
   }
 
@@ -314,6 +362,13 @@ export function mountSfera(stage, { mode }) {
     lastPointerY = e.clientY;
     pointer.x = (e.clientX / innerWidth) * 2 - 1;
     pointer.y = -(e.clientY / innerHeight) * 2 + 1;
+  }
+
+  function hitsLingua() {
+    if (!linguePronte) return null;
+    raycaster.setFromCamera(pointer, camera);
+    const hit = raycaster.intersectObjects(lingueBlobs.map((b) => b.mesh), false)[0];
+    return hit?.object ?? null;
   }
 
   function hitsSphere() {
@@ -379,7 +434,7 @@ export function mountSfera(stage, { mode }) {
         ghost.style.opacity = '0';
       });
     });
-    window.setTimeout(() => ghost.remove(), 420);
+    window.setTimeout(() => ghost.remove(), 520);
   }
 
   function hash01(s) {
@@ -435,7 +490,69 @@ export function mountSfera(stage, { mode }) {
     if (item) item.leaving = true;
   }
 
+  function pulisciScoppio() {
+    for (const p of scoppioPezzi) {
+      scene.remove(p.mesh);
+      p.mesh.geometry.dispose();
+      p.mesh.material.dispose();
+    }
+    scoppioPezzi.length = 0;
+  }
+
+  function lanciaScoppio() {
+    pulisciScoppio();
+    const col = material.color.clone();
+    for (let i = 0; i < 10; i++) {
+      const geo = new THREE.IcosahedronGeometry(0.04 + Math.random() * 0.06, 1);
+      const mat = new THREE.MeshPhysicalMaterial({
+        color: col,
+        metalness: 0.42,
+        roughness: 0.46,
+        emissive: col,
+        emissiveIntensity: 0.48,
+        transparent: true,
+        opacity: 1,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(sphere.position);
+      const dir = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+      if (dir.lengthSq() < 0.0001) dir.set(0, 1, 0);
+      dir.normalize();
+      scoppioPezzi.push({
+        mesh,
+        vel: dir.multiplyScalar(0.08 + Math.random() * 0.14),
+        spin: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.14),
+        life: 1,
+      });
+      scene.add(mesh);
+    }
+  }
+
+  function tickScoppio() {
+    for (let i = scoppioPezzi.length - 1; i >= 0; i--) {
+      const p = scoppioPezzi[i];
+      p.mesh.position.add(p.vel);
+      p.vel.y -= 0.0011;
+      p.vel.multiplyScalar(0.986);
+      p.mesh.rotation.x += p.spin.x;
+      p.mesh.rotation.y += p.spin.y;
+      p.life -= 0.028;
+      p.mesh.material.opacity = Math.max(0, p.life);
+      p.mesh.scale.setScalar(Math.max(0.12, p.life));
+      if (p.life <= 0) {
+        scene.remove(p.mesh);
+        p.mesh.geometry.dispose();
+        p.mesh.material.dispose();
+        scoppioPezzi.splice(i, 1);
+      }
+    }
+  }
+
   function applyGlass() {
+    if (mode !== 'home') {
+      material.opacity = fadeOpacity * fadeGame;
+      return;
+    }
     if (mode !== 'home') {
       material.opacity = fadeOpacity * fadeGame;
       return;
@@ -444,8 +561,8 @@ export function mountSfera(stage, { mode }) {
     const target = alive ? 1 : 0;
     glassT += (target - glassT) * 0.1;
     material.transmission = 0;
-    material.metalness = THREE.MathUtils.lerp(1, 0.55, glassT);
-    material.roughness = THREE.MathUtils.lerp(0.28, 0.16, glassT);
+    material.metalness = THREE.MathUtils.lerp(0.58, 0.42, glassT);
+    material.roughness = THREE.MathUtils.lerp(0.48, 0.32, glassT);
     material.color.lerpColors(COLOR_METAL, COLOR_GLASS, glassT);
     material.opacity = fadeOpacity * THREE.MathUtils.lerp(1, 0.28, glassT);
     material.depthWrite = glassT < 0.4;
@@ -505,15 +622,271 @@ export function mountSfera(stage, { mode }) {
     if (presiN) presiN.textContent = String(presi.length);
   }
 
+  function pulisciGocce() {
+    for (const g of gocce) {
+      scene.remove(g.mesh);
+      g.mesh.material.dispose();
+    }
+    gocce.length = 0;
+  }
+
+  function materialeLingua(color, offset) {
+    const mat = new THREE.MeshPhysicalMaterial({
+      color,
+      metalness: 0.38,
+      roughness: 0.48,
+      envMapIntensity: 0.58,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.48,
+      sheen: 0.55,
+      sheenColor: new THREE.Color(0xfff0e8),
+      sheenRoughness: 0.5,
+      emissive: new THREE.Color(color),
+      emissiveIntensity: 0.38,
+      transparent: true,
+      opacity: 0,
+    });
+    mat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = lingueUniforms.uTime;
+      shader.uniforms.uDeform = lingueUniforms.uDeform;
+      shader.uniforms.uStretch = lingueUniforms.uStretch;
+      shader.uniforms.uSpeed = lingueUniforms.uSpeed;
+      shader.uniforms.uOff = { value: offset };
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <common>',
+        `#include <common>
+        uniform float uTime;
+        uniform float uDeform;
+        uniform float uStretch;
+        uniform float uSpeed;
+        uniform float uOff;
+        float blobNoise(vec3 p, float t) {
+          float n1 = sin(p.x * 2.4 + t) * sin(p.y * 2.1 + t * 0.72) * sin(p.z * 2.6 + t * 0.88);
+          float n2 = sin(p.x * 4.1 + t * 0.55) * sin(p.y * 3.6 - t * 0.7) * sin(p.z * 3.2 + t * 0.48);
+          return n1 + n2 * 0.65;
+        }`,
+      );
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <begin_vertex>',
+        `#include <begin_vertex>
+        float t = uTime * uSpeed * 8.0 + uOff;
+        transformed.x *= 1.0 + uStretch * sin(t * 0.55);
+        transformed.y *= 1.0 + uStretch * 0.85 * sin(t * 0.41 + 1.1);
+        transformed.z *= 1.0 + uStretch * 0.7 * sin(t * 0.63 + 0.4);
+        transformed += objectNormal * blobNoise(transformed, t) * uDeform;
+        `,
+      );
+    };
+    return mat;
+  }
+
+  function creaLingueBlobs() {
+    if (lingueBlobs.length) return;
+    LINGUE.forEach((liv, i) => {
+      const mesh = new THREE.Mesh(lingueGeo, materialeLingua(liv.colore, i * 1.7));
+      mesh.userData.id = liv.id;
+      mesh.visible = false;
+      scene.add(mesh);
+      lingueBlobs.push({ mesh, lato: i === 0 ? -1 : 1 });
+    });
+  }
+
+  function puntiLingue() {
+    return lingueBlobs.map((b) => {
+      const sotto = b.mesh.position.clone();
+      sotto.y -= b.mesh.scale.y;
+      screenPos.copy(sotto).project(camera);
+      return {
+        id: b.mesh.userData.id,
+        x: (screenPos.x * 0.5 + 0.5) * innerWidth,
+        y: (-screenPos.y * 0.5 + 0.5) * innerHeight,
+      };
+    });
+  }
+
+  function chiudiLingue() {
+    lingueT0 = -1;
+    linguePronte = false;
+    lingueFermeDetto = false;
+    onLinguaScelta = null;
+    onLingueFerme = null;
+    for (const b of lingueBlobs) {
+      b.mesh.visible = false;
+      b.mesh.material.opacity = 0;
+    }
+  }
+
+  function apriLingue({ onScelta, onFerme }) {
+    fermaBollicina();
+    pulisciScoppio();
+    introClickEnabled = false;
+    finale = null;
+    umoreTarget = 0;
+    umoreSmooth = 0;
+    scalaExtra = 1;
+    scalaExtraTarget = 1;
+    fadeGame = 1;
+    fadeInT0 = 0;
+    absorbStarted = 0;
+    coloreLivello = false;
+    coloreBase.copy(COLOR_METAL);
+    material.color.copy(COLOR_METAL);
+    material.emissiveIntensity = 0;
+    applyScale();
+    applyGlass();
+    creaLingueBlobs();
+    onLinguaScelta = onScelta;
+    onLingueFerme = onFerme;
+    for (const b of lingueBlobs) {
+      b.mesh.visible = true;
+      b.mesh.position.copy(sphere.position);
+      b.mesh.scale.setScalar(worldRadiusForPx(8));
+      b.mesh.material.opacity = 0;
+    }
+    lingueT0 = performance.now();
+    linguePronte = false;
+    lingueFermeDetto = false;
+  }
+
+  function tickLingue(t) {
+    if (lingueT0 < 0) return;
+    const u = uSeparazione(performance.now() - lingueT0);
+    const origine = { x: sphere.position.x, y: sphere.position.y };
+    const r = sphere.scale.x;
+    const distX = Math.max(0.78, r * 1.42);
+    const distY = Math.max(0.88, r * 1.48);
+    const s = worldRadiusForPx(2.9 * PX_PER_CM) * (0.2 + 0.8 * u);
+    for (const b of lingueBlobs) {
+      const p = posBlobLingua(u, b.lato, origine, distX, distY);
+      b.mesh.position.set(p.x, p.y, sphere.position.z);
+      b.mesh.scale.setScalar(s);
+      b.mesh.material.opacity = Math.min(1, 0.12 + u * 1.05);
+      b.mesh.rotation.y = t * 0.2 + b.lato;
+      b.mesh.rotation.x = Math.sin(t * 0.22 + b.lato) * 0.18;
+    }
+    if (etichetteVisibili(u) && !lingueFermeDetto) {
+      linguePronte = true;
+      lingueFermeDetto = true;
+      if (onLingueFerme) onLingueFerme(puntiLingue());
+    }
+  }
+
+  function fermaBollicina() {
+    bollicinaT0 = -1;
+    bollicinaNomeDetto = false;
+    bollicina.visible = false;
+    bollicinaMat.opacity = 0;
+    pulisciGocce();
+  }
+
+  function avviaBollicina() {
+    if (mode !== 'intro') return;
+    fermaBollicina();
+    bollicinaT0 = performance.now();
+    bollicinaNomeDetto = false;
+  }
+
+  function nateGocce(origine, raggio) {
+    pulisciGocce();
+    for (let i = 0; i < 9; i++) {
+      const mat = bollicinaMat.clone();
+      mat.opacity = 0.85;
+      const mesh = new THREE.Mesh(bollicinaGeo, mat);
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const dir = new THREE.Vector3(
+        Math.sin(phi) * Math.cos(theta),
+        Math.abs(Math.sin(phi) * Math.sin(theta)) * 0.55 + 0.35,
+        Math.cos(phi) * 0.7,
+      ).normalize();
+      const vel = 0.22 + Math.random() * 0.38;
+      mesh.position.copy(origine);
+      mesh.scale.setScalar(raggio * (0.18 + Math.random() * 0.28));
+      scene.add(mesh);
+      gocce.push({
+        mesh,
+        vx: dir.x * vel,
+        vy: dir.y * vel,
+        vz: dir.z * vel,
+      });
+    }
+  }
+
+  function tickBollicina() {
+    if (bollicinaT0 < 0) return;
+    const elapsed = (performance.now() - bollicinaT0) / 1000;
+    const fase = faseBollicina(elapsed);
+    const rSfera = sphere.scale.x;
+    const origine = sphere.position.clone();
+
+    if (fase === 'salita') {
+      const u = uSalita(elapsed);
+      const emerge = Math.min(1, u / 0.22);
+      bollicina.visible = true;
+      bollicina.position.set(
+        origine.x,
+        origine.y + rSfera * THREE.MathUtils.lerp(-0.15, 2.35, u),
+        origine.z,
+      );
+      const s = rSfera * THREE.MathUtils.lerp(0.12, 0.28, u) * emerge;
+      const stretch = 1 + u * 0.22;
+      bollicina.scale.set(s * 0.92, s * stretch, s * 0.92);
+      bollicinaMat.opacity = 0.2 + emerge * 0.7;
+      bollicina.rotation.x = Math.sin(elapsed * 3.2) * 0.12;
+      bollicina.rotation.z = Math.cos(elapsed * 2.6) * 0.1;
+    } else if (fase === 'scoppio') {
+      if (gocce.length === 0) {
+        const u = 1;
+        const pos = new THREE.Vector3(
+          origine.x,
+          origine.y + rSfera * THREE.MathUtils.lerp(-0.15, 2.35, u),
+          origine.z,
+        );
+        scoppioPunto.copy(pos);
+        nateGocce(pos, rSfera * 0.28);
+        bollicina.visible = false;
+        bollicinaMat.opacity = 0;
+      }
+      const dt = 1 / 60;
+      for (const g of gocce) {
+        g.vy -= 0.18 * dt;
+        g.mesh.position.x += g.vx * dt;
+        g.mesh.position.y += g.vy * dt;
+        g.mesh.position.z += g.vz * dt;
+        g.vx *= 0.992;
+        g.vy *= 0.992;
+        g.vz *= 0.992;
+        g.mesh.material.opacity = Math.max(0, g.mesh.material.opacity - dt * 0.72);
+        const k = g.mesh.scale.x * (1 + dt * 0.28);
+        g.mesh.scale.setScalar(k);
+      }
+    } else if (fase === 'nome') {
+      bollicina.visible = false;
+      pulisciGocce();
+      if (!bollicinaNomeDetto) {
+        bollicinaNomeDetto = true;
+        if (scoppioPunto.lengthSq() < 0.0001) {
+          scoppioPunto.set(origine.x, origine.y + rSfera * 2.35, origine.z);
+        }
+        screenPos.copy(scoppioPunto).project(camera);
+        onNomePronto?.({
+          x: (screenPos.x * 0.5 + 0.5) * innerWidth,
+          y: (-screenPos.y * 0.5 + 0.5) * innerHeight,
+        });
+      }
+    }
+  }
+
   function stayCenter(t) {
     if (!following && !displaced) {
       sphere.position.set(0, restWorldY(), 0);
     }
     spinVel *= 0.9;
     spinY += spinVel;
-    sphere.rotation.y = t * 0.18 + spinY;
-    sphere.rotation.x = Math.sin(t * 0.22) * 0.22;
-    sphere.rotation.z = Math.cos(t * 0.17) * 0.12;
+    const rot = rotazioneBlob(t);
+    sphere.rotation.y = rot.y + spinY;
+    sphere.rotation.x = rot.x;
+    sphere.rotation.z = rot.z;
   }
 
   function setFade(opacity) {
@@ -542,7 +915,8 @@ export function mountSfera(stage, { mode }) {
   window.addEventListener('pointermove', (e) => {
     setPointer(e);
     if (mode === 'intro') {
-      canvas.style.cursor = fadedIn && hitsSphere() ? 'pointer' : 'default';
+      const lingua = hitsLingua();
+      canvas.style.cursor = (lingua || (fadedIn && introClickEnabled && hitsSphere())) ? 'pointer' : 'default';
       return;
     }
     if (!following) {
@@ -557,7 +931,13 @@ export function mountSfera(stage, { mode }) {
     if (e.button !== 0 || !fadedIn) return;
     setPointer(e);
     if (mode === 'intro') {
+      const lingua = hitsLingua();
+      if (lingua && onLinguaScelta) {
+        onLinguaScelta(lingua.userData.id);
+        return;
+      }
       if (!hitsSphere() || !introClickEnabled) return;
+      fermaBollicina();
       if (introClick) introClick();
       else window.location.href = '/home';
       return;
@@ -606,17 +986,26 @@ export function mountSfera(stage, { mode }) {
       sphere.position.y += Math.cos(t * 91) * amp * 0.85;
     }
     tickInner(t);
+    tickBollicina();
+    tickLingue(t);
     evidenzia();
     if (!fadedIn) {
       const o = opacityAt(performance.now());
       setFade(o);
-      if (o >= 1) fadedIn = true;
+      if (o >= 1) {
+        fadedIn = true;
+        if (mode === 'intro') avviaBollicina();
+      }
     }
     if (finale === 'vanish') {
       fadeGame += (0 - fadeGame) * 0.1;
     } else if (finale === 'explode') {
-      if (scalaExtra > 2.1) fadeGame += (0 - fadeGame) * 0.16;
+      if (scalaExtra > 1.2) fadeGame += (0 - fadeGame) * 0.42;
+    } else if (fadeInT0) {
+      fadeGame = Math.min(1, (performance.now() - fadeInT0) / FADE_IN_PARTITA_MS);
+      if (fadeGame >= 1) fadeInT0 = 0;
     }
+    tickScoppio();
     applyGlass();
     const orbit = t * 0.08;
     fill.position.set(Math.cos(orbit) * 3.5, 3 + Math.sin(orbit * 0.7) * 1.2, 5);
@@ -626,17 +1015,60 @@ export function mountSfera(stage, { mode }) {
   tick();
 
   function resetta() {
+    pulisciScoppio();
+    chiudiLingue();
     finale = null;
     umoreTarget = 0;
     umoreSmooth = 0;
     scalaExtra = 1;
     scalaExtraTarget = 1;
     fadeGame = 1;
+    fadeInT0 = 0;
     absorbStarted = 0;
+    coloreLivello = false;
+    coloreBase.copy(COLOR_METAL);
     material.color.copy(COLOR_METAL);
     material.emissiveIntensity = 0;
     introClickEnabled = true;
     applyScale();
+    if (mode === 'intro' && fadedIn) avviaBollicina();
+  }
+
+  function nascondiPerScelta() {
+    fermaBollicina();
+    pulisciScoppio();
+    chiudiLingue();
+    introClickEnabled = false;
+    finale = null;
+    umoreTarget = 0;
+    umoreSmooth = 0;
+    scalaExtra = 1;
+    scalaExtraTarget = 1;
+    fadeGame = 0;
+    fadeInT0 = 0;
+    absorbStarted = 0;
+    applyScale();
+    applyGlass();
+  }
+
+  function preparaPartita(hex) {
+    fermaBollicina();
+    pulisciScoppio();
+    chiudiLingue();
+    introClickEnabled = false;
+    finale = null;
+    umoreTarget = 0;
+    umoreSmooth = 0;
+    scalaExtra = 1;
+    scalaExtraTarget = 1;
+    fadeGame = 0;
+    fadeInT0 = performance.now();
+    absorbStarted = 0;
+    coloreLivello = true;
+    coloreBase.setHex(hex);
+    material.color.copy(coloreBase);
+    applyScale();
+    applyGlass();
   }
 
   const stop = () => {
@@ -645,6 +1077,13 @@ export function mountSfera(stage, { mode }) {
       disposeObject(item.pivot);
     }
     innerItems.clear();
+    fermaBollicina();
+    pulisciScoppio();
+    chiudiLingue();
+    lingueGeo.dispose();
+    for (const b of lingueBlobs) b.mesh.material.dispose();
+    bollicinaGeo.dispose();
+    bollicinaMat.dispose();
     geometry.dispose();
     material.dispose();
     renderer.dispose();
@@ -656,6 +1095,10 @@ export function mountSfera(stage, { mode }) {
     onIntroClick(fn) {
       introClick = fn;
     },
+    onNomePronto(fn) {
+      onNomePronto = fn;
+    },
+    fermaBollicina,
     setIntroClickEnabled(v) {
       introClickEnabled = v;
     },
@@ -674,9 +1117,15 @@ export function mountSfera(stage, { mode }) {
     },
     esplodi() {
       finale = 'explode';
-      scalaExtraTarget = 6.5;
+      scalaExtraTarget = 2.3;
       absorbStarted = performance.now();
+      lanciaScoppio();
     },
+    nascondiPerScelta,
+    preparaPartita,
+    apriLingue,
+    chiudiLingue,
+    puntiLingue,
     resetta,
   };
 }

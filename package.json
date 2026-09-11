@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "node --test src/lib/gioco.test.js"
+    "test": "node --test src/lib/gioco.test.js src/lib/bollicina.test.js src/lib/livelli.test.js src/lib/parole.test.js src/lib/lingue.test.js src/lib/esercizi.test.js src/lib/suoni.test.js src/lib/nome.test.js src/lib/presentazione.test.js src/lib/blob-sfondo.test.js"
   },
   "dependencies": {
     "astro": "^7.3.2",

@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Sfera from '../components/Sfera.astro';
+import '../styles/gioco.css';
+---
+
+<Layout title="BLUBLINO" bloccata>
+  <Sfera mode="intro" />
+  <div id="gioco">
+    <h1 class="nome-gioco" aria-label="BLUBLINO" aria-hidden="true"></h1>
+    <p class="inizia" hidden aria-hidden="true"><span class="inizia-testo">Inizia</span></p>
+    <div id="scelta" hidden>
+      <div class="scelta-etichette" aria-hidden="true">
+        <button type="button" data-livello="italiano">italiano</button>
+        <button type="button" data-livello="inglese">inglese</button>
+      </div>
+    </div>
+    <p class="fine" hidden></p>
+    <canvas id="fuochi" class="fuochi" hidden></canvas>
+    <button type="button" class="indietro" hidden aria-label="Torna a italiano e inglese">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.2 5.2 8.4 12l6.8 6.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <div class="esercizio" hidden>
+      <p class="parola-prova" hidden></p>
+      <div class="tessere" hidden></div>
+      <div class="riga">
+        <span class="parola sx"></span>
+        <div class="centro">
+          <div class="puntini" aria-hidden="true"></div>
+          <input
+            class="campo"
+            type="text"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Risposta"
+            disabled
+          />
+        </div>
+        <span class="parola dx"></span>
+      </div>
+    </div>
+  </div>
+</Layout>

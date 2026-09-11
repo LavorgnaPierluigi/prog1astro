@@ -1,7 +1,9 @@
+import { stessaSillabe, tipiPerMazzo } from './esercizi.js';
+
 /**
- * @typedef {{ sinistra: string, destra: string, risposta: string }} Coppia
+ * @typedef {{ risposta: string, sillabe: string, tipo?: 'tessere' | 'sillabe' | 'buchi' }} Parola
  * @typedef {{
- *   mazzo: Coppia[],
+ *   mazzo: Parola[],
  *   indice: number,
  *   serieGiuste: number,
  *   serieSbagli: number,
@@ -32,9 +34,11 @@ export function mescola(elenco, casuale = Math.random) {
   return mazzo;
 }
 
-export function nuovaPartita(coppie, casuale = Math.random) {
+export function nuovaPartita(parole, casuale = Math.random) {
+  const miste = mescola(parole, casuale);
+  const tipi = tipiPerMazzo(miste, casuale);
   return {
-    mazzo: mescola(coppie, casuale),
+    mazzo: miste.map((p, i) => ({ ...p, tipo: tipi[i] })),
     indice: 0,
     serieGiuste: 0,
     serieSbagli: 0,
@@ -43,14 +47,23 @@ export function nuovaPartita(coppie, casuale = Math.random) {
   };
 }
 
-export function coppiaCorrente(partita) {
+export function parolaCorrente(partita) {
   return partita.mazzo[partita.indice];
+}
+
+export function coppiaCorrente(partita) {
+  return parolaCorrente(partita);
+}
+
+export function testoGiusto(turno, testo) {
+  if (turno.tipo === 'sillabe') return stessaSillabe(testo, turno.sillabe);
+  return stessaParola(testo, turno.risposta);
 }
 
 export function rispondi(partita, testo) {
   if (partita.fase !== 'play') return { ...partita, giusta: false };
 
-  const giusta = stessaParola(testo, coppiaCorrente(partita).risposta);
+  const giusta = testoGiusto(parolaCorrente(partita), testo);
   const dopo = {
     ...partita,
     mazzo: partita.mazzo,

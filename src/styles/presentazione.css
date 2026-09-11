@@ -1,0 +1,255 @@
+.presentazione {
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+  overflow: hidden;
+}
+
+.presentazione .sfondo-blob {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.presentazione.apertura .sfondo-blob {
+  opacity: 0;
+  animation: apertura-entra 2s ease forwards;
+}
+
+.presentazione.apertura .titolo-apertura {
+  opacity: 0;
+  animation: apertura-entra 2s ease 3s forwards;
+}
+
+.presentazione.apertura .resto-apertura {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: apertura-resto 2s ease 6s forwards;
+}
+
+@keyframes apertura-entra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes apertura-resto {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.presentazione .sfondo-blob canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.presentazione-colonna {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(38rem, 100%);
+  height: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 1.2rem;
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 12vh 8vw;
+}
+
+.presentazione .testi {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 22rem;
+}
+
+.presentazione .schermata {
+  display: grid;
+  justify-items: start;
+  gap: 1.1rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.presentazione .schermata.attiva {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.presentazione .schermata.attiva.entra {
+  animation: banner-entra 1s ease both;
+}
+
+.presentazione .schermata.esce {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: none;
+  animation: banner-esce 1s ease both;
+}
+
+@keyframes banner-esce {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes banner-entra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.presentazione .etichetta {
+  margin: 0;
+  font-size: clamp(12px, 1.5vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 230, 214, 0.55);
+}
+
+.presentazione .etichetta.miele {
+  color: #f6d05a;
+}
+
+.presentazione .etichetta.cielo {
+  color: #8fd4f2;
+}
+
+.presentazione .etichetta.pesca {
+  color: #f0b09e;
+}
+
+.presentazione h1,
+.presentazione h2 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  text-shadow: 0 2px 18px rgba(240, 180, 196, 0.22);
+}
+
+.presentazione h1 {
+  font-size: clamp(40px, 8vw, 72px);
+  letter-spacing: 0.18em;
+}
+
+.presentazione h2 {
+  font-size: clamp(26px, 4.4vw, 40px);
+}
+
+.presentazione .lead,
+.presentazione .schermata p,
+.presentazione .schermata li {
+  margin: 0;
+  max-width: 28rem;
+  font-size: clamp(18px, 2.2vw, 22px);
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+}
+
+.presentazione .lead {
+  color: rgba(244, 230, 214, 0.82);
+}
+
+.presentazione ul {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.presentazione .schermata li {
+  padding-left: 0;
+}
+
+.presentazione .schermata li::before {
+  content: '';
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 0.7em;
+  border-radius: 42% 58% 48% 52% / 52% 38% 62% 48%;
+  background: #f6d05a;
+  vertical-align: 0.12em;
+}
+
+.presentazione .schermata li:nth-child(2)::before {
+  background: #73c3ee;
+}
+
+.presentazione .schermata li:nth-child(3)::before {
+  background: #f0b09e;
+}
+
+.presentazione .ultima {
+  justify-items: center;
+  text-align: center;
+}
+
+.presentazione .prova {
+  display: inline-grid;
+  place-items: center;
+  margin-top: 0.4rem;
+  min-height: 3.4rem;
+  padding: 0.85rem 2.2rem;
+  border-radius: 999px;
+  background: linear-gradient(165deg, #fff6ee 0%, #f7d4c8 52%, #e8b4b0 100%);
+  color: #5a4038;
+  font-weight: 700;
+  font-size: clamp(16px, 2vw, 20px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(80, 40, 50, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.presentazione .prova:hover,
+.presentazione .prova:focus-visible {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presentazione .schermata {
+    animation: none;
+  }
+
+  .presentazione.apertura .sfondo-blob,
+  .presentazione.apertura .titolo-apertura,
+  .presentazione.apertura .resto-apertura {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    animation: none;
+  }
+}
